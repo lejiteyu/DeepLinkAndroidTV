@@ -1,5 +1,6 @@
 package lyon.deeplink.sample
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -37,13 +38,35 @@ class FirstFragment : Fragment() {
         binding.buttonFirst.setOnClickListener {
 
             //Ref:https://louis383.medium.com/android-app-links-%E8%A8%AD%E5%AE%9A%E5%BF%83%E5%BE%97%E7%AD%86%E8%A8%98-6bd8ab212297
-            val netflix = Intent()
-            netflix.action = Intent.ACTION_VIEW
-            netflix.data = Uri.parse("http://video.friday.tw/home/70202141?linkType=12&linkValue=3&src=mWeb")
-            netflix.putExtra("search", "30") // careful: String, not int
+            try {
+                val netflix = Intent()
+                netflix.action = Intent.ACTION_VIEW
+                netflix.data =
+                    Uri.parse("http://video.friday.tw/home/70202141?linkType=12&linkValue=3&src=mWeb")
+                netflix.putExtra("search", "30") // careful: String, not int
 
-            netflix.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(netflix)
+                netflix.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(netflix)
+            }catch (e:Exception){
+                val appPackageName: String ="net.fetnet.fetvod.tv"
+                   // getPackageName() from Context or Activity object
+
+                try {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=$appPackageName")
+                        )
+                    )
+                } catch (anfe: ActivityNotFoundException) {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                        )
+                    )
+                }
+            }
         }
         binding.buttonFirst.requestFocus();
     }
